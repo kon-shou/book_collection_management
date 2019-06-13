@@ -44,6 +44,7 @@ class UserController extends Controller
             'books' => $books->map(function (Book $book) {
                 return [
                     'id' => $book->id,
+                    'title' => $book->title,
                     'registered_at' => $book->registered_at,
                     'owner_user_name' => $book->ownerUser->name,
                     'borrow_user_name' => $book->borrowUser->name ?? null,
