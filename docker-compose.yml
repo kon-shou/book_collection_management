@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  mysql:
+    image: mysql:5.7
+    volumes:
+      - "${HOME}/book-management_mysql:/var/lib/mysql"
+    env_file: .env
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+      TZ: "Asia/Tokyo"
+  app:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    user: ubuntu
+    volumes:
+      - .:/srv
+      - ./docker/nginx.conf:/etc/nginx/sites-enabled/bcm
+      - ./docker/php-fpm.conf:/etc/php/7.2/fpm/pool.d/bcm.conf
+    command: docker/entrypoint-app.sh
+    depends_on:
+      - mysql
+    links:
+      - mysql
+    ports:
+      - "3000:3000"
+      - "8000:8000"
+    working_dir: /srv
+    env_file: .env
+    tty: true
