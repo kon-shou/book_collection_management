@@ -16,5 +16,3 @@
 1. `docker-compose up`
 1. `npm run generate`
 1. `http://localhost:8000`
-
-

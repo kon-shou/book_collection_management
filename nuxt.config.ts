@@ -1,8 +1,9 @@
 require('dotenv').config()
 
+import NuxtConfiguration from '@nuxt/config'
 const apiBaseUrl = process.env.API_BASE_URL
 
-export default {
+const config: NuxtConfiguration = {
   mode: 'spa',
   srcDir: 'client/',
   /*
@@ -60,3 +61,5 @@ export default {
     extend(config, ctx) {}
   }
 }
+
+export default config
