@@ -60,7 +60,7 @@ export default class extends Vue {
 
   async handleLogin(value: { email: string; password: string }) {
     console.log(value)
-    const response = await this.$axios.post('/api/user/login', {
+    const response = await this.$axios.post('/user/login', {
       email: value.email,
       password: value.password
     })
@@ -72,7 +72,7 @@ export default class extends Vue {
 
   async handleRegister(value: { email: string; password: string }) {
     console.log(value)
-    const response = await this.$axios.post('/api/user/register', {
+    const response = await this.$axios.post('/user/register', {
       email: value.email,
       password: value.password
     })

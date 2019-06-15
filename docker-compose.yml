@@ -24,7 +24,6 @@ services:
     links:
       - mysql
     ports:
-      - "3000:3000"
       - "8000:8000"
     working_dir: /srv
     env_file: .env

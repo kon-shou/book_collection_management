@@ -1,7 +1,6 @@
-require('dotenv').config()
-
 import NuxtConfiguration from '@nuxt/config'
-const apiBaseUrl = process.env.API_BASE_URL
+
+require('dotenv').config()
 
 const config: NuxtConfiguration = {
   mode: 'spa',
@@ -42,14 +41,15 @@ const config: NuxtConfiguration = {
     'nuxt-buefy',
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
-    '@nuxtjs/eslint-module'
+    '@nuxtjs/eslint-module',
+    '@nuxtjs/proxy'
   ],
   /*
    ** Axios module configuration
    ** See https://axios.nuxtjs.org/options
    */
   axios: {
-    baseURL: apiBaseUrl
+    baseURL: '/api'
   },
   /*
    ** Build configuration
@@ -58,8 +58,14 @@ const config: NuxtConfiguration = {
     /*
      ** You can extend webpack config here
      */
-    extend(config, ctx) {}
+  },
+  proxy: {
+    '/api/': { target: 'api.example.com', pathRewrite: { '^/api/': '' } }
   }
+}
+
+if (process.env.API_BASE_URL) {
+  config.proxy = [process.env.API_BASE_URL]
 }
 
 export default config
