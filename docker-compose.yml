@@ -9,6 +9,8 @@ services:
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: 1
       TZ: "Asia/Tokyo"
+    ports:
+      - "3306:3306"
   app:
     build:
       context: ./
