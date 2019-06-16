@@ -1,9 +1,22 @@
 <template>
   <form action="">
-    <header class="hero">
-      <p class="title">{{ modalTitle }}</p>
-    </header>
     <section class="modal-card-body">
+      <b-field
+        v-if="isRegister"
+        label="name"
+        :type="{ 'is-danger': errors.has('name') }"
+        :message="errors.first('name')"
+      >
+        <b-input
+          v-model="name"
+          v-validate="'required'"
+          name="name"
+          type="name"
+          placeholder="name"
+        >
+        </b-input>
+      </b-field>
+
       <b-field
         label="Email"
         :type="{ 'is-danger': errors.has('email') }"
@@ -51,11 +64,12 @@ Vue.use(VeeValidate, {
 
 @Component({
   props: {
-    modalTitle: String,
-    submitWord: String
+    submitWord: String,
+    isRegister: Boolean
   }
 })
 export default class extends Vue {
+  name = ''
   email = ''
   password = ''
 
@@ -63,6 +77,7 @@ export default class extends Vue {
     const passed = await this.$validator.validateAll()
     if (passed) {
       this.$emit('submit', {
+        name: this.name,
         email: this.email,
         password: this.password
       })

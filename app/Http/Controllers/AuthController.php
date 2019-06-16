@@ -35,6 +35,20 @@ class AuthController extends Controller
         ];
     }
 
+    public function register(Request $request)
+    {
+        $name = $request->get('name');
+        $email = $request->get('email');
+        $password = $request->get('password');
+        if (!$name || !$email || !$password) {
+            throw new ValidationException('name, email, passwordは必須です');
+        }
+
+        $this->userRepository->register($name, $email, $password);
+
+        return [];
+    }
+
     public function logout(Request $request)
     {
         $user = $request->user();
