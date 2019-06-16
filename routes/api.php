@@ -1,5 +1,4 @@
 <?php
-
 use Illuminate\Http\Request;
 
 /*
@@ -13,14 +12,24 @@ use Illuminate\Http\Request;
 |
 */
 
-// TODO middleware('auth:api')
-Route::prefix('user')->group(function ($route) {
-    $route->post('/login', 'UserController@login');
+Route::group(['prefix' => 'auth'], function ($route) {
+    $route->post('/login', 'AuthController@login');
+    $route->post('/logout', 'AuthController@logout');
 
-    $route->get('/', 'UserController@index');
-    $route->get('/{id}', 'UserController@show');
+    $route->group(['middleware' => ['auth:api']], function ($route) {
+        $route->get('/user', 'AuthController@user');
+    });
 });
 
-Route::prefix('book')->group(function ($route) {
-    $route->post('/register', 'BookController@create');
+Route::group(['prefix' => 'user'], function ($route) {
+    $route->group(['middleware' => ['auth:api']], function ($route) {
+        $route->get('/{id}', 'UserController@show');
+    });
 });
+
+Route::group(['prefix' => 'book'], function ($route) {
+    $route->group(['middleware' => ['auth:api']], function ($route) {
+        $route->post('/register', 'BookController@create');
+    });
+});
+

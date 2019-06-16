@@ -7,6 +7,7 @@ use App\Repository\BookRepository;
 use App\Repository\UserRepository;
 use Dotenv\Exception\ValidationException;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class UserController extends Controller
 {
@@ -19,21 +20,6 @@ class UserController extends Controller
     ) {
         $this->userRepository = $userRepository;
         $this->bookRepository = $bookRepository;
-    }
-
-    public function login(Request $request)
-    {
-        $userId = $request->get('name');
-        if (!$userId) {
-            throw new ValidationException('nameは必須です');
-        }
-
-        $user = $this->userRepository->findByName($userId);
-        if (!$user) {
-            abort('ユーザーが見つかりませんでした');
-        }
-
-        return $user;
     }
 
     public function show(int $userId)
