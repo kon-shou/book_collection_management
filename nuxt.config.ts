@@ -32,7 +32,7 @@ const config: NuxtConfiguration = {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: [],
+  plugins: ['~/plugins/dependency'],
   /*
    ** Nuxt.js modules
    */
