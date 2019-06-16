@@ -9,11 +9,15 @@
         <a class="navbar-item" href="/">
           <img src="~assets/buefy.png" alt="Buefy" height="28" />
         </a>
+      </div>
 
-        <div class="navbar-burger">
-          <span />
-          <span />
-          <span />
+      <div v-if="$auth.loggedIn" class="navbar-end">
+        <div class="navbar-item">
+          <div class="buttons">
+            <a class="button is-light" @click="handleLogout">
+              ログアウト
+            </a>
+          </div>
         </div>
       </div>
     </nav>
@@ -38,8 +42,9 @@
 </template>
 
 <script lang="ts">
-import { Vue } from 'vue-property-decorator'
+import { Component, Vue } from 'vue-property-decorator'
 
+@Component({})
 export default class extends Vue {
   items = [
     {
@@ -53,5 +58,17 @@ export default class extends Vue {
       to: { name: 'inspire' }
     }
   ]
+
+  async handleLogout() {
+    await this.$auth.logout().catch(() => {
+      this.$toast.open({
+        message: 'Form is not valid! Please check the fields.',
+        type: 'is-danger',
+        position: 'is-bottom'
+      })
+    })
+
+    this.$router.push('/')
+  }
 }
 </script>

@@ -14,9 +14,9 @@ use Illuminate\Http\Request;
 
 Route::group(['prefix' => 'auth'], function ($route) {
     $route->post('/login', 'AuthController@login');
-    $route->post('/logout', 'AuthController@logout');
 
     $route->group(['middleware' => ['auth:api']], function ($route) {
+        $route->post('/logout', 'AuthController@logout');
         $route->get('/user', 'AuthController@user');
     });
 });

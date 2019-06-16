@@ -8,6 +8,7 @@ use App\Repository\UserRepository;
 use Dotenv\Exception\ValidationException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Laravel\Passport\Token;
 
 class AuthController extends Controller
 {
@@ -22,16 +23,28 @@ class AuthController extends Controller
     {
         $creds = $request->only('email', 'password');
         if (!auth()->attempt($creds)) {
-            return response()->json(['Unauthorized.'], Response::HTTP_UNAUTHORIZED);
+            abort(Response::HTTP_UNAUTHORIZED, 'Unauthorized.');
         }
 
         $user = auth()->user();
         $user->tokens()->delete();
-        $token = $user->createToken('SPA');
+        $token = $user->createToken('bcm_'. $user->id);
         return [
             'user' => $user,
             'token' => $token->accessToken,
         ];
+    }
+
+    public function logout(Request $request)
+    {
+        $user = $request->user();
+        if (!$user) {
+            abort(Response::HTTP_UNAUTHORIZED, 'Unauthorized.');
+        }
+
+        $user->tokens()->delete();
+
+        return [];
     }
 
     public function user()
