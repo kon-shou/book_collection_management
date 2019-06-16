@@ -2,37 +2,28 @@
   <section class="section">
     <div class="has-text-centered">
       <h1 class="title">個人/オフィス蔵書管理へようこそ!!</h1>
-      <div class="bottom"></div>
-
-      <button
-        class="button is-medium is-primary"
-        @click.prevent="openLoginModal"
-      >
-        ログイン
-      </button>
-
-      <button
-        class="button is-medium is-info"
-        @click.prevent="openRegisterModal"
-      >
-        新規登録
-      </button>
-
-      <b-modal :active.sync="isLoginModalActive" has-modal-card>
-        <login-form
-          :modal-title="`ログイン`"
-          :submit-word="`ログイン`"
-          @submit="handleLogin"
-        />
-      </b-modal>
-
-      <b-modal :active.sync="isRegisterModalActive" has-modal-card>
-        <login-form
-          :modal-title="`新規登録`"
-          :submit-word="`登録`"
-          @submit="handleRegister"
-        />
-      </b-modal>
+      <div v-if="$auth.loggedIn" class="bottom">
+        <button
+          class="button is-medium is-primary"
+          @click.prevent="$router.push('/dashboard')"
+        >
+          ダッシュボード
+        </button>
+      </div>
+      <div v-else class="bottom">
+        <button
+          class="button is-medium is-primary"
+          @click.prevent="$router.push('/login')"
+        >
+          ログイン
+        </button>
+        <button
+          class="button is-medium is-info"
+          @click.prevent="$router.push('/register')"
+        >
+          新規登録
+        </button>
+      </div>
     </div>
   </section>
 </template>
@@ -44,7 +35,8 @@ import _ from 'lodash'
 @Component({
   components: {
     LoginForm: () => import('~/components/LoginForm.vue')
-  }
+  },
+  auth: false
 })
 export default class extends Vue {
   isLoginModalActive = false
@@ -59,19 +51,27 @@ export default class extends Vue {
   }
 
   async handleLogin(value: { email: string; password: string }) {
-    console.log(value)
-    const response = await this.$axios.post('/user/login', {
-      email: value.email,
-      password: value.password
-    })
+    await this.$auth
+      .loginWith('local', {
+        data: {
+          email: value.email,
+          password: value.password
+        }
+      })
+      .catch(() => {
+        this.$toast.open({
+          message: 'Form is not valid! Please check the fields.',
+          type: 'is-danger',
+          position: 'is-bottom'
+        })
+      })
 
-    if (response.status === 200) {
-      this.$route.push(`/${_.get(response, 'id')}`)
+    if (this.$auth.loggedIn) {
+      this.$router.push(`/user/${_.get(this.$auth.$state, 'user.id')}`)
     }
   }
 
   async handleRegister(value: { email: string; password: string }) {
-    console.log(value)
     const response = await this.$axios.post('/user/register', {
       email: value.email,
       password: value.password

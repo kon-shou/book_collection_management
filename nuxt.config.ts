@@ -42,7 +42,8 @@ const config: NuxtConfiguration = {
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
     '@nuxtjs/eslint-module',
-    '@nuxtjs/proxy'
+    '@nuxtjs/proxy',
+    '@nuxtjs/auth'
   ],
   /*
    ** Axios module configuration
@@ -59,8 +60,20 @@ const config: NuxtConfiguration = {
      ** You can extend webpack config here
      */
   },
-  proxy: {
-    '/api/': { target: 'api.example.com', pathRewrite: { '^/api/': '' } }
+  router: {
+    middleware: ['auth']
+  },
+  auth: {
+    strategies: {
+      local: {
+        endpoints: {
+          login: { url: '/auth/login', method: 'post', propertyName: 'token' },
+          logout: { url: '/auth/logout', method: 'post' },
+          user: { url: '/auth/user', method: 'get' }
+        },
+        tokenRequired: true
+      }
+    }
   }
 }
 

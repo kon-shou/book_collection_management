@@ -2,9 +2,9 @@
   <section class="section">
     <div class="has-text-centered">
       <login-form
-        :modal-title="`ログイン`"
-        :submit-word="`ログイン`"
-        @submit="handleLogin"
+        :modal-title="`新規登録`"
+        :submit-word="`登録する`"
+        @submit="handleRegister"
       />
     </div>
   </section>
@@ -20,7 +20,12 @@ import { Component, Vue } from 'vue-property-decorator'
   auth: 'guest'
 })
 export default class extends Vue {
-  async handleLogin(value: { email: string; password: string }) {
+  async handleRegister(value: { email: string; password: string }) {
+    await this.$axios.post('/auth/register', {
+      email: value.email,
+      password: value.password
+    })
+
     await this.$auth
       .loginWith('local', {
         data: {

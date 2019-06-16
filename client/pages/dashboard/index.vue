@@ -2,8 +2,8 @@
   <section>
     <button
       class="button field is-danger"
-      @click="checkedRows = []"
       :disabled="!checkedRows.length"
+      @click="checkedRows = []"
     >
       <b-icon icon="close"></b-icon>
       <span>Clear checked</span>
@@ -42,19 +42,17 @@
   </section>
 </template>
 
-<script>
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator'
 import _ from 'lodash'
-import axios from 'axios'
-import ModalForm from '~/components/ModalForm'
 
-export default {
-  name: 'UserDetailPage',
+@Component({
   components: {
-    ModalForm
+    ModalForm: () => import('~/components/ModalForm.vue')
   },
-  async asyncData({ params }) {
+  async asyncData({ params, $axios, store }) {
     const userId = params.id
-    const booksResponse = await axios.get(`/api/user/${userId}`)
+    const booksResponse = await $axios.get(`/user/${store.state.auth.user.id}`)
     const books = _.get(booksResponse.data, 'books')
 
     return {
@@ -89,12 +87,10 @@ export default {
         }
       ]
     }
-  },
-  data() {
-    return {
-      isComponentModalActive: false,
-      checkedRows: []
-    }
   }
+})
+export default class extends Vue {
+  isComponentModalActive = false
+  checkedRows = []
 }
 </script>
