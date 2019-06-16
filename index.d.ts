@@ -4,6 +4,7 @@ import 'vee-validate/types'
 
 import Vue, { ComponentOptions } from 'vue'
 import { CookieAttributes } from 'js-cookie'
+import BookRepository from '~/domain/Book/BookRepository'
 // import { User } from "../../server/services/v1/users/users.interface";
 
 // todo: context?
@@ -56,9 +57,16 @@ declare module 'vue/types/options' {
 }
 
 declare module 'vue/types/vue' {
+  import UserRepository from '~/domain/User/UserRepository'
+
+  import BookshelfRepository from '~/domain/Bookshelf/BookshelfRepository'
+
   interface Vue {
     $auth: Auth<Any>
     close(): any // buefy
+    $userRepository: UserRepository
+    $bookRepository: BookRepository
+    $bookshelfRepository: BookshelfRepository
   }
 }
 
