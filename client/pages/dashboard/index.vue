@@ -1,44 +1,58 @@
 <template>
-  <section>
-    <button
-      class="button field is-danger"
-      :disabled="!checkedRows.length"
-      @click="checkedRows = []"
-    >
-      <b-icon icon="close"></b-icon>
-      <span>Clear checked</span>
-    </button>
+  <section class="has-text-centered">
+    <div class="card has-text-centered">
+      <header class="card-header">
+        <p class="card-header-title has-text-grey">
+          Now Reading ... !
+        </p>
+      </header>
 
-    <b-tabs>
-      <b-tab-item label="Table">
-        <b-table
-          :data="data"
-          :columns="columns"
-          :checked-rows.sync="checkedRows"
-          :is-row-checkable="row => row.id !== 3"
-          checkable
-        >
-          <template slot="bottom-left">
-            <b>Total checked</b>: {{ checkedRows.length }}
-          </template>
-        </b-table>
-      </b-tab-item>
+      <footer class="card-footer">
+        <div class="card-footer-item has-text-centered">
+          <table class="table">
+            <tr>
+              <th>タイトル</th>
+              <th>読んだページ数</th>
+              <th></th>
+            </tr>
+            <tr v-for="book in books" :key="book.id">
+              <td>{{ book.title }}</td>
+              <td>
+                <input
+                  class="slider is-fullwidth"
+                  step="1"
+                  min="0"
+                  max="100"
+                  value="50"
+                  type="range"
+                />
+              </td>
+              <td>
+                <button class="button" @click="finishReading(book.id)">
+                  読了！
+                </button>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </footer>
+    </div>
 
-      <b-tab-item label="Checked rows">
-        <pre>{{ checkedRows }}</pre>
-      </b-tab-item>
-    </b-tabs>
-    <button
-      type="button"
-      class="button is-primary"
-      @click="isComponentModalActive = true"
-    >
-      本を本棚に登録する
-    </button>
-
-    <b-modal :active.sync="isComponentModalActive" has-modal-card>
-      <modal-form v-bind="{ userId }"></modal-form>
-    </b-modal>
+    <div class="bottom">
+      <button
+        class="button is-medium is-primary"
+        @click.prevent="$router.push('/bookshelf/personal')"
+      >
+        個人用の本棚を見る
+      </button>
+      <button
+        disabled
+        class="button is-medium is-info"
+        @click.prevent="$router.push('/bookshelf/organization')"
+      >
+        オフィスの本棚を見る
+      </button>
+    </div>
   </section>
 </template>
 
@@ -50,47 +64,25 @@ import _ from 'lodash'
   components: {
     ModalForm: () => import('~/components/ModalForm.vue')
   },
-  async asyncData({ params, $axios, store }) {
-    const userId = params.id
-    const booksResponse = await $axios.get(`/user/${store.state.auth.user.id}`)
-    const books = _.get(booksResponse.data, 'books')
+  async asyncData({ store, app }) {
+    const user = await app.$userRepository.find(store.state.auth.user.id)
+    const books = await app.$bookRepository.findAllBooksByBorrowUser(user)
 
     return {
-      userId,
-      data: books,
-      columns: [
-        {
-          field: 'id',
-          label: 'ID',
-          width: '40',
-          numeric: true
-        },
-        {
-          field: 'title',
-          label: 'タイトル'
-        },
-        {
-          field: 'registered_at',
-          label: '登録日'
-        },
-        {
-          field: 'status',
-          label: 'ステータス'
-        },
-        {
-          field: 'owner_user_name',
-          label: '本の所有者'
-        },
-        {
-          field: 'borrow_user_name',
-          label: '本を借りてる人'
-        }
-      ]
+      books,
+      user
     }
   }
 })
 export default class extends Vue {
-  isComponentModalActive = false
-  checkedRows = []
+  private isComponentModalActive = false
+  private books
+  private user
+
+  async finishReading(bookId) {
+    const book = _.find(this.books, book => book.id === bookId)
+    await this.$bookRepository.endBorrow(book, this.user)
+    this.books = await this.$bookRepository.findAllBooksByBorrowUser(this.user)
+  }
 }
 </script>

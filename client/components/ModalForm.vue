@@ -6,7 +6,16 @@
       </header>
       <section class="modal-card-body">
         <b-field label="本のタイトル">
-          <b-input type="input" v-model="title" placeholder="タイトル" required>
+          <b-input v-model="title" type="input" placeholder="タイトル" required>
+          </b-input>
+        </b-field>
+        <b-field label="本のページ数">
+          <b-input
+            v-model="totalPage"
+            type="input"
+            placeholder="ページ数"
+            required
+          >
           </b-input>
         </b-field>
       </section>
@@ -14,7 +23,7 @@
         <button class="button" type="button" @click="$parent.close()">
           閉じる
         </button>
-        <button class="button is-primary" @click="registerBook">
+        <button class="button is-primary" @click.prevent="dispatchSubmit">
           登録
         </button>
       </footer>
@@ -22,30 +31,16 @@
   </form>
 </template>
 
-<script>
-export default {
-  name: 'ModalForm',
-  props: {
-    userId: String
-  },
-  data() {
-    return {
-      title: ''
-    }
-  },
-  methods: {
-    registerBook: function() {
-      this.$axios
-        .post('/book/register', {
-          user_id: this.userId,
-          title: this.title
-        })
-        .then(response => {
-          console.log(response)
-        })
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator'
 
-      this.$parent.close()
-    }
+@Component({})
+export default class extends Vue {
+  title = ''
+  totalPage = null
+
+  dispatchSubmit() {
+    this.$emit('submit', { title: this.title, totalPage: this.totalPage })
   }
 }
 </script>

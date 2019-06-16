@@ -10,7 +10,7 @@ export default class BookshelfRepository {
   }
 
   public async createPersonalBookshelfByUser(user: User): Promise<Bookshelf> {
-    const response = await this.axios.post('/bookshelf/create//personal', {
+    const response = await this.axios.post('/bookshelf/create/personal', {
       user_id: user.id
     })
     return new Bookshelf(response.data)

@@ -84,11 +84,7 @@ export default class extends Vue {
     email: string
     password: string
   }) {
-    await this.$axios.post('/auth/register', {
-      name: value.name,
-      email: value.email,
-      password: value.password
-    })
+    const user = await this.$userRepository.create(value)
 
     await this.$auth
       .loginWith('local', {
@@ -106,6 +102,7 @@ export default class extends Vue {
       })
 
     if (this.$auth.loggedIn) {
+      await this.$bookshelfRepository.createPersonalBookshelfByUser(user)
       this.$router.push('/dashboard')
     }
   }
