@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Hash;
 
 class UserRepository
 {
-    public function findById(int $userId): ?User
+    public function find(int $userId): ?User
     {
         return User::query()->find($userId);
     }
@@ -17,7 +17,7 @@ class UserRepository
         return User::query()->where('name', $name)->first();
     }
 
-    public function register(string $name, string $email, string $password): void
+    public function register(string $name, string $email, string $password): User
     {
         $user = new User();
         $user->name = $name;
@@ -25,6 +25,8 @@ class UserRepository
         $user->password = Hash::make($password);
 
         $user->save();
+
+        return $user;
     }
 
 }

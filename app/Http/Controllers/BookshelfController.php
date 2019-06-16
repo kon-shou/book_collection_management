@@ -8,9 +8,8 @@ use App\Repository\BookshelfRepository;
 use App\Repository\UserRepository;
 use Dotenv\Exception\ValidationException;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 
-class UserController extends Controller
+class BookshelfController extends Controller
 {
     private $userRepository;
     private $bookRepository;
@@ -26,41 +25,32 @@ class UserController extends Controller
         $this->bookshelfRepository = $bookshelfRepository;
     }
 
-    public function show(int $userId)
+    public function createPersonal(Request $request)
     {
+        $userId = $request->get('user_id');
+        if (!$userId) {
+            throw new ValidationException('user_idは必須です');
+        }
+
         $user = $this->userRepository->find($userId);
         if (!$user) {
             abort('404', 'User not Found');
         }
 
-        return $user;
-    }
+        $this->bookshelfRepository->createPersonal($user);
 
-    public function indexBorrowBooks(int $userId)
+        return [];
+     }
+
+    public function indexBooks(int $bookshelfId)
     {
-        $user = $this->userRepository->find($userId);
-        if (!$user) {
-            abort('404', 'User not Found');
+        $bookshelf = $this->bookshelfRepository->find($bookshelfId);
+        if (!$bookshelf) {
+            abort('404', 'Bookshelf not Found');
         }
 
-        $books = $this->bookRepository->findAllBorrowBooksByUser($user);
+        $books = $this->bookRepository->findAllBooksByBookshelf($bookshelf);
 
         return $books;
-    }
-
-    public function showPersonalBookshelf(int $userId)
-    {
-        $user = $this->userRepository->find($userId);
-        if (!$user) {
-            abort('404', 'User not Found');
-        }
-
-        $bookshelf = $this->bookshelfRepository->findPersonalBookshelfByUser($user);
-        if (!$bookshelf) {
-            abort('404', 'Personal Bookshelf not Found');
-        }
-
-        return $bookshelf;
-
     }
 }
